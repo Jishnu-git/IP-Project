@@ -4,24 +4,18 @@ from skimage import io
 from google.cloud import vision
 from skimage.filters.rank import entropy
 from skimage.morphology import disk
+from Tools import getGrayImg
 
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "VisionAPIKey.json"
 client = vision.ImageAnnotatorClient()
 
 def Img2Text(image):
     content = cv2.imencode(".jpg", image)[1].tostring()
-    encodedImage = vision.types.Image(content = content)
+    encodedImage = vision.Image(content = content)
     texts = client.text_detection(image = encodedImage).text_annotations
     if (texts):
         print(texts[0].description + "\n")
     return texts
-
-def getGrayImg(img_name):
-    img_path = os.path.join("../Data/Text/", img_name)
-    image = io.imread(img_path)
-    if (len(image.shape) == 3):
-        image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    return image
 
 def NoisyImg2Text(image):
     #Image processing to enhance output
